@@ -553,7 +553,7 @@ int main(int argc, char **argv)
 
 	printf("Usage: %s <port>\n", argv[0]);
 
-	char *ip = "127.0.0.1"; // inisialisasi ip yang digunakan
+	char *ip = "128.199.244.249"; // inisialisasi ip yang digunakan
 
 	int port = atoi(argv[1]); // convert string to integer
 
