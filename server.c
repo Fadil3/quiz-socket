@@ -309,7 +309,8 @@ char jeda[3] = {"\n"};
 
 FILE *fsoal;
 
-void send_question(){
+void send_question()
+{
 	int j = 0;
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -337,7 +338,8 @@ void send_question(){
 	}
 }
 
-void copy_question(){
+void copy_question()
+{
 	int j = 0;
 
 	fscanf(fsoal, "%s", pertanyaan[j]);
@@ -355,85 +357,101 @@ void copy_question(){
 	fscanf(fsoal, " %s", correct);
 	//fclose(fsoal);
 }
-void next_question(){
-	for (int i = 0; i < MAX_CLIENTS; ++i){
-		if (clients[i]){
+void next_question()
+{
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clients[i])
+		{
 			char *pesan;
 			pesan = "Soal Selanjutnya...\n";
 			write(clients[i]->sockfd, pesan, strlen(pesan));
 		}
 	}
-
 }
 
-void quiz2(){
+void quiz2()
+{
 	fsoal = fopen("soal2.txt", "r");
 	copy_question();
 	send_question();
 	fclose(fsoal);
 	soal++;
 }
-void quiz3(){
+void quiz3()
+{
 	fsoal = fopen("soal3.txt", "r");
 	copy_question();
 	send_question();
 	fclose(fsoal);
 	soal++;
 }
-void quiz4(){
+void quiz4()
+{
 	fsoal = fopen("soal4.txt", "r");
 	copy_question();
 	send_question();
 	fclose(fsoal);
 	soal++;
 }
-void quiz5(){
+void quiz5()
+{
 	fsoal = fopen("soal5.txt", "r");
 	copy_question();
 	send_question();
 	fclose(fsoal);
 	soal++;
 }
-void viewscoreboard(){
+void viewscoreboard()
+{
 	char *pesan;
-	for (int i = 0; i < MAX_CLIENTS; ++i){
-		if (clients[i]){
-			if (soal == 5){
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clients[i])
+		{
+			if (soal == 5)
+			{
 				pesan = "====Papan Skor Akhir===\n";
 				write(clients[i]->sockfd, pesan, strlen(pesan));
-			}else{
+			}
+			else
+			{
 				pesan = "====Papan Skor Sementara===\n";
 				write(clients[i]->sockfd, pesan, strlen(pesan));
 			}
-			if(clients[0]->skor > clients[1]->skor){
+			if (clients[0]->skor > clients[1]->skor)
+			{
 				write(clients[i]->sockfd, clients[0]->name, strlen(clients[0]->name));
 				pesan = " : ";
 				write(clients[i]->sockfd, pesan, strlen(pesan));
 				char temp[32];
-				sprintf(temp,"%d",clients[0]->skor);
+				sprintf(temp, "%d", clients[0]->skor);
 				write(clients[i]->sockfd, temp, strlen(temp));
 				pesan = "\n";
 				write(clients[i]->sockfd, pesan, strlen(pesan));
 				write(clients[i]->sockfd, clients[1]->name, strlen(clients[1]->name));
 				pesan = " : ";
 				write(clients[i]->sockfd, pesan, strlen(pesan));
-				sprintf(temp,"%d",clients[1]->skor);
+				sprintf(temp, "%d", clients[1]->skor);
 				write(clients[i]->sockfd, temp, strlen(temp));
 				pesan = "\n";
 				write(clients[i]->sockfd, pesan, strlen(pesan));
-				if (soal == 5){
+				if (soal == 5)
+				{
 					pesan = "Pemenanganya adalah ";
 					write(clients[i]->sockfd, pesan, strlen(pesan));
 					write(clients[i]->sockfd, clients[0]->name, strlen(clients[0]->name));
 					pesan = "\n";
 					write(clients[i]->sockfd, pesan, strlen(pesan));
 				}
-			}else{
+			}
+			else
+			{
 				write(clients[i]->sockfd, clients[1]->name, strlen(clients[1]->name));
 				pesan = " : ";
 				write(clients[i]->sockfd, pesan, strlen(pesan));
 				char temp[32];
-				sprintf(temp,"%d",clients[1]->skor);
+				sprintf(temp, "%d", clients[1]->skor);
 				write(clients[i]->sockfd, temp, strlen(temp));
 				pesan = "\n";
 				write(clients[i]->sockfd, pesan, strlen(pesan));
@@ -441,11 +459,12 @@ void viewscoreboard(){
 				write(clients[i]->sockfd, clients[0]->name, strlen(clients[0]->name));
 				pesan = " : ";
 				write(clients[i]->sockfd, pesan, strlen(pesan));
-				sprintf(temp,"%d",clients[0]->skor);
+				sprintf(temp, "%d", clients[0]->skor);
 				write(clients[i]->sockfd, temp, strlen(temp));
 				pesan = "\n";
 				write(clients[i]->sockfd, pesan, strlen(pesan));
-				if (soal == 5){
+				if (soal == 5)
+				{
 					pesan = "Pemenanganya adalah ";
 					write(clients[i]->sockfd, pesan, strlen(pesan));
 					write(clients[i]->sockfd, clients[1]->name, strlen(clients[1]->name));
@@ -457,36 +476,43 @@ void viewscoreboard(){
 	}
 	printf("vskr\n");
 }
-void *handle_quiz(void *arg){
-	while(1){
-		if(next == 2 && soal == 1){
+void *handle_quiz(void *arg)
+{
+	while (1)
+	{
+		if (next == 2 && soal == 1)
+		{
 			next_question();
 			sleep(1);
 			quiz2();
 			next = 0;
 		}
-		if(next == 2 && soal == 2){
+		if (next == 2 && soal == 2)
+		{
 			viewscoreboard();
 			next_question();
 			sleep(2);
 			quiz3();
 			next = 0;
 		}
-		if(next == 2 && soal == 3){
+		if (next == 2 && soal == 3)
+		{
 			viewscoreboard();
 			next_question();
 			sleep(2);
 			quiz4();
 			next = 0;
 		}
-		if(next == 2 && soal == 4){
+		if (next == 2 && soal == 4)
+		{
 			viewscoreboard();
 			next_question();
 			sleep(1);
 			quiz5();
 			next = 0;
 		}
-		if(next == 2 && soal == 5){
+		if (next == 2 && soal == 5)
+		{
 			sleep(2);
 			viewscoreboard();
 			next = 0;
@@ -495,9 +521,12 @@ void *handle_quiz(void *arg){
 }
 pthread_t qid;
 
-void quiz(){
-	for (int i = 0; i < MAX_CLIENTS; ++i){
-		if (clients[i]){
+void quiz()
+{
+	for (int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (clients[i])
+		{
 			char *pesan;
 			pesan = "Quiz akan dimulai\n";
 			write(clients[i]->sockfd, pesan, strlen(pesan));
@@ -512,7 +541,6 @@ void quiz(){
 	pthread_create(&qid, NULL, &handle_quiz, NULL);
 }
 
-
 int main(int argc, char **argv)
 {
 	int tes = 0;
@@ -523,7 +551,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	char *ip = "127.0.0.1"; // inisialisasi ip yang digunakan
+	char *ip = "128.199.244.249"; // inisialisasi ip yang digunakan
 
 	int port = atoi(argv[1]); // convert string to integer
 
