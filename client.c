@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	char *ip = "127.0.0.1";
+	char *ip = "128.199.244.249";
 	int port = atoi(argv[1]); // convert string to int
 
 	signal(SIGINT, catch_ctrl_c_and_exit);
