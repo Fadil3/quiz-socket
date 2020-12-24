@@ -1,0 +1,6 @@
+Apa nama ibu kota negara Indonesia? ##
+A.Jakarta
+B.Jogjakarta
+C.Bandung
+D.Surabaya
+A

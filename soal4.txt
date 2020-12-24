@@ -1,0 +1,6 @@
+Berapakah jumlah hati pada gurita? ##
+A.satu
+B.dua
+C.tiga
+D.empat
+C
