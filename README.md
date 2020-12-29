@@ -16,11 +16,11 @@ gcc -pthread server.c -o server
 gcc -pthread client.c -o client
 
 #### Cara eksekusi program server
-./server <Port>
+./server < Port >
 
 contoh : ./server 9999
 
 #### Cara eksekusi program client
-./client <Port>
+./client < Port >
 
 contoh : ./client 9999
