@@ -41,11 +41,6 @@ void inc_next()
 	next++;
 	pthread_mutex_unlock(&clients_mutex);
 }
-void str_overwrite_stdout()
-{
-	printf("\r%s", "> ");
-	fflush(stdout);
-}
 
 // menghapus panjang string
 void str_trim_lf(char *arr, int length)
@@ -191,7 +186,6 @@ void *handle_client(void *arg)
 	char name[32];
 	int leave_flag = 0;
 	int elapsed = 0;
-	char answer[50];
 	char saveptr[32];
 	char delimit[2] = {'-', '\0'};
 	int temp_skor = 0;
@@ -230,6 +224,7 @@ void *handle_client(void *arg)
 			{
 				if (start == 1)
 				{
+					//ekstrak token
 					printf("buff out %s\n", buff_out);
 					char *ptr = get_token(buff_out, delimit, &saveptr);
 					printf("1: %s\n", ptr);
@@ -237,7 +232,7 @@ void *handle_client(void *arg)
 					ptr = get_token(NULL, delimit, &saveptr);
 					printf("2: %s\n", ptr);
 
-					int x = atoi(ptr);
+					int x = atoi(ptr); // convert char to string
 					printf("elapsed %d\n", x);
 
 					if (cli->ans < soal)
@@ -293,17 +288,14 @@ void *handle_client(void *arg)
 	close(cli->sockfd);
 	queue_remove(cli->uid);
 	free(cli);
-	// realloc(cli, 0);
 	cli_count--;
 	pthread_detach(pthread_self());
 
 	return NULL;
 }
 
-//printf("masuk\n");
 char pertanyaan[30][20];
 char option[5][100];
-// char abjad[4][4] = {"A.", "B.", "C.", "D."};
 char temp[100];
 char jeda[3] = {"\n"};
 
@@ -355,8 +347,8 @@ void copy_question()
 	}
 
 	fscanf(fsoal, " %s", correct);
-	//fclose(fsoal);
 }
+
 void next_question()
 {
 	for (int i = 0; i < MAX_CLIENTS; ++i)
@@ -402,6 +394,7 @@ void quiz5()
 	fclose(fsoal);
 	soal++;
 }
+
 void viewscoreboard()
 {
 	char *pesan;
@@ -474,7 +467,6 @@ void viewscoreboard()
 			}
 		}
 	}
-	printf("vskr\n");
 }
 void *handle_quiz(void *arg)
 {
@@ -519,8 +511,8 @@ void *handle_quiz(void *arg)
 		}
 	}
 }
-pthread_t qid;
 
+pthread_t qid;
 void quiz()
 {
 	for (int i = 0; i < MAX_CLIENTS; ++i)
@@ -547,13 +539,14 @@ int main(int argc, char **argv)
 	char *pesan;
 	if (argc != 2)
 	{
-		printf("Usage: %s <port>\n", argv[0]);
+		// printf("Usage: %s <port>\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
 	printf("Usage: %s <port>\n", argv[0]);
 
 	char *ip = "128.199.244.249"; // inisialisasi ip yang digunakan
+	// char *ip = "127.0.0.1";		  // inisialisasi ip yang digunakan
 
 	int port = atoi(argv[1]); // convert string to integer
 

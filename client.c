@@ -17,18 +17,11 @@
 volatile sig_atomic_t flag = 0;
 int sockfd = 0;
 char name[32];
-int skor = 0; // tampung skor
 
 // waktu untuk perhitungan skor
 struct timeval waktu;
 time_t mulai, selesai;
 int elapsed;
-
-void str_overwrite_stdout()
-{
-	printf("%s", "");
-	fflush(stdout);
-}
 
 // menghapus \n
 void str_trim_lf(char *arr, int length)
@@ -48,19 +41,6 @@ void catch_ctrl_c_and_exit(int sig)
 {
 	flag = 1;
 }
-// int judge(char message[])
-// {
-
-// 	if (strcmp(message, "masuk") == 0)
-// 	{
-// 		skor += 100 + 10 * (30 - elapsed);
-// 		return 1;
-// 	}
-// 	else
-// 	{
-// 		return 0;
-// 	}
-// }
 
 void send_msg_handler()
 {
@@ -72,27 +52,24 @@ void send_msg_handler()
 	while (1)
 	{
 
+		//inisiasi waktu mulai
 		gettimeofday(&waktu, NULL);
 		mulai = waktu.tv_sec;
 
 		fgets(message, LENGTH, stdin); //ambil input
 
+		//inisiasi waktu akhir
 		gettimeofday(&waktu, NULL);
 		selesai = waktu.tv_sec;
 
+		//menghitung selisih waktu mulai dan akhir
 		elapsed = difftime(selesai, mulai);
-		str_overwrite_stdout();
-		str_trim_lf(message, LENGTH);
 
-		// int coba = judge(message);
-		// printf("skor %d\n", skor);
+		str_trim_lf(message, LENGTH);
 
 		sprintf(buffer, "%d", elapsed); // convert int to string
 		strcat(message, "-");
 		strcat(message, buffer);
-
-		// D-4
-		//printf("message %s\n", message);
 
 		if (strcmp(message, "exit") == 0)
 		{
@@ -105,7 +82,7 @@ void send_msg_handler()
 			if (i == 0)
 			{
 				strcpy(tampungan, strcat(name, ": "));
-				i++; /* code */
+				i++;
 			}
 			else
 			{
@@ -131,7 +108,6 @@ void recv_msg_handler()
 		if (receive > 0)
 		{
 			printf("%s", message);
-			str_overwrite_stdout();
 		}
 		else if (receive == 0)
 		{
@@ -154,9 +130,10 @@ int main(int argc, char **argv)
 	}
 
 	char *ip = "128.199.244.249";
+	// char *ip = "127.0.0.1";
 	int port = atoi(argv[1]); // convert string to int
 
-	signal(SIGINT, catch_ctrl_c_and_exit);
+	signal(SIGINT, catch_ctrl_c_and_exit); // menerima signal ctrl+c
 
 	printf("Please enter your name: ");
 	fgets(name, 32, stdin);
@@ -173,8 +150,11 @@ int main(int argc, char **argv)
 	/* Socket settings */
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = inet_addr(ip);
-	server_addr.sin_port = htons(port);
+	server_addr.sin_addr.s_addr = inet_addr(ip); // ip address yang digunakan
+
+	/*htons() Fungsi htons() berasal dari host (h), 
+	menjadi (to), network (n), short (s).*/
+	server_addr.sin_port = htons(port); // port yang digunakan
 
 	// Connect to Server
 	int err = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
@@ -189,6 +169,7 @@ int main(int argc, char **argv)
 
 	printf("=== Selamat datang di client side kuis Kahoot ===\n");
 
+	//generate thread send message
 	pthread_t send_msg_thread;
 	if (pthread_create(&send_msg_thread, NULL, (void *)send_msg_handler, NULL) != 0)
 	{
@@ -196,6 +177,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
+	//generate thread receive message
 	pthread_t recv_msg_thread;
 	if (pthread_create(&recv_msg_thread, NULL, (void *)recv_msg_handler, NULL) != 0)
 	{
@@ -205,13 +187,14 @@ int main(int argc, char **argv)
 
 	while (1)
 	{
-		if (flag)
+		if (flag) // kalau signal ctrl + c masuk
 		{
 			printf("\nBye\n");
 			break;
 		}
 	}
 
+	//menutup socket
 	close(sockfd);
 
 	return EXIT_SUCCESS;
