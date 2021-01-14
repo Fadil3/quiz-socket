@@ -42,7 +42,7 @@ void inc_next()
 	pthread_mutex_unlock(&clients_mutex);
 }
 
-// menghapus panjang string
+// menghapus \n
 void str_trim_lf(char *arr, int length)
 {
 	int i;
@@ -172,6 +172,7 @@ char *get_token(char *psrc, const char *delimit, void *psave)
 	return sret;
 }
 
+//perhitungan skor
 int count_score(int elapsed)
 {
 	int skor = 0;
@@ -191,7 +192,7 @@ void *handle_client(void *arg)
 	int temp_skor = 0;
 	char kirim_skor[50];
 
-	cli_count++;
+	cli_count++; // menambah jumlah client
 	client_t *cli = (client_t *)arg;
 
 	// Name
@@ -239,7 +240,9 @@ void *handle_client(void *arg)
 					{
 
 						inc_next();
-						cli->ans++;
+						cli->ans++; // menambah counter ans
+
+						//kalau jawabannya benar
 						if (correct[0] == buff_out[strlen(cli->name) + 2])
 						{
 							temp_skor = count_score(x);
@@ -301,6 +304,7 @@ char jeda[3] = {"\n"};
 
 FILE *fsoal;
 
+// kirim pertanyaan dan option jawaban ke client
 void send_question()
 {
 	int j = 0;
@@ -310,6 +314,7 @@ void send_question()
 		{
 			j = 0;
 
+			//kirim pertanyaan
 			while (strcmp(pertanyaan[j], "##") != 0)
 			{
 				strcat(pertanyaan[j], " ");
@@ -322,6 +327,7 @@ void send_question()
 			}
 			write(clients[i]->sockfd, jeda, strlen(jeda));
 
+			//kirim option jawaban
 			for (int k = 0; k < 4; k++)
 			{
 				write(clients[i]->sockfd, option[k], strlen(option[k]));
@@ -330,6 +336,7 @@ void send_question()
 	}
 }
 
+// baca soal dan jawaban lalu ditampung
 void copy_question()
 {
 	int j = 0;
@@ -349,6 +356,7 @@ void copy_question()
 	fscanf(fsoal, " %s", correct);
 }
 
+// kirim pesan ke client bahwa soal selanjutnya akan muncul
 void next_question()
 {
 	for (int i = 0; i < MAX_CLIENTS; ++i)
@@ -362,6 +370,7 @@ void next_question()
 	}
 }
 
+// membuka soal ke 2
 void quiz2()
 {
 	fsoal = fopen("soal2.txt", "r");
@@ -370,6 +379,8 @@ void quiz2()
 	fclose(fsoal);
 	soal++;
 }
+
+// membuka soal ke 3
 void quiz3()
 {
 	fsoal = fopen("soal3.txt", "r");
@@ -378,6 +389,8 @@ void quiz3()
 	fclose(fsoal);
 	soal++;
 }
+
+// membuka soal ke 4
 void quiz4()
 {
 	fsoal = fopen("soal4.txt", "r");
@@ -386,6 +399,8 @@ void quiz4()
 	fclose(fsoal);
 	soal++;
 }
+
+// membuka soal ke 5
 void quiz5()
 {
 	fsoal = fopen("soal5.txt", "r");
@@ -395,6 +410,7 @@ void quiz5()
 	soal++;
 }
 
+//memunculkan scoreboard
 void viewscoreboard()
 {
 	char *pesan;
@@ -468,6 +484,8 @@ void viewscoreboard()
 		}
 	}
 }
+
+//proses yang handle quiz
 void *handle_quiz(void *arg)
 {
 	while (1)
@@ -515,6 +533,7 @@ void *handle_quiz(void *arg)
 pthread_t qid;
 void quiz()
 {
+	// kirim pesan ke semua clients bahwa quiz akan dimulai
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (clients[i])
@@ -525,11 +544,14 @@ void quiz()
 		}
 	}
 	sleep(1);
+
+	//buka soal pertama
 	fsoal = fopen("soal1.txt", "r");
 	copy_question();
 	send_question();
 	fclose(fsoal);
 	soal++;
+
 	pthread_create(&qid, NULL, &handle_quiz, NULL);
 }
 
@@ -619,7 +641,7 @@ int main(int argc, char **argv)
 		sleep(1);
 		if (cli_count == 2)
 		{
-			quiz();
+			quiz(); // memulai quiz
 			start = 1;
 		}
 	}
