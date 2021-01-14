@@ -68,8 +68,8 @@ void send_msg_handler()
 		str_trim_lf(message, LENGTH);
 
 		sprintf(buffer, "%d", elapsed); // convert int to string
-		strcat(message, "-");
-		strcat(message, buffer);
+		strcat(message, "-");			// menambahkan `-` sebagai pembatas
+		strcat(message, buffer);		// menambahkan waktu
 
 		if (strcmp(message, "exit") == 0)
 		{
@@ -77,7 +77,6 @@ void send_msg_handler()
 		}
 		else
 		{
-			//convert integer to string in C
 
 			if (i == 0)
 			{
@@ -90,6 +89,8 @@ void send_msg_handler()
 			}
 			strcpy(tampungan, strcat(tampungan, message));
 			sprintf(buffer, "%s\n", tampungan);
+
+			// kirim pesan ke server dengan format "nama : jawaban-waktu"
 			send(sockfd, buffer, strlen(buffer), 0);
 		}
 
@@ -99,6 +100,7 @@ void send_msg_handler()
 	catch_ctrl_c_and_exit(2);
 }
 
+//terima pesan dari server
 void recv_msg_handler()
 {
 	char message[LENGTH] = {};
@@ -129,7 +131,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	char *ip = "128.199.244.249";
+	char *ip = "128.199.244.249"; // ip yang digunakan
 	// char *ip = "127.0.0.1";
 	int port = atoi(argv[1]); // convert string to int
 
